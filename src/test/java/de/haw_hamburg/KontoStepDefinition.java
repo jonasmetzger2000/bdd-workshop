@@ -75,8 +75,24 @@ public class KontoStepDefinition {
         final Transaction transaction = this.transaction.get(transaktionNum - 1);
         final Account expectedSender = accountMap.get(sender);
         assertThat(transaction.getSender())
-                .as("Nicht erwarteter Sender, ActualSender=%s, ExpectedSender=%s", transaction.getSender(), expectedSender)
+                .as("ActualSender=%s, ExpectedSender=%s", transaction.getSender(), expectedSender)
                 .isEqualTo(expectedSender);
+    }
+
+    @And("transaction {int} should be received by {string}")
+    public void transaktionValidateReceiver(int transactionNum, String receiver) {
+        final Transaction transaction = this.transaction.get(transactionNum - 1);
+        final Account expectedReceiver = accountMap.get(receiver);
+        assertThat(transaction.getEmpfaenger())
+                .as("ActualSender=%s, ExpectedSender=%s", transaction.getSender(), expectedReceiver)
+                .isEqualTo(expectedReceiver);
+    }
+
+    @And("transaction {int} should have a value of {double}€")
+    public void transactionValidateAmount(int transactionNum, double value) {
+        final Transaction transaction = this.transaction.get(transactionNum - 1);
+        assertThat(transaction.getBetrag())
+                .isEqualTo(value, Offset.offset(0.01));
     }
 
     @ParameterType("fail|success|succeed")
