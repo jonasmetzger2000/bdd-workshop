@@ -21,17 +21,17 @@ public class KontoStepDefinition {
     private List<Boolean> transactionStatus = new ArrayList<>();
 
     @Given("Account {string} has a balance of {double}€")
-    public void erstelleKonto(String kontoName, double kontostand) {
+    public void createAccount(String kontoName, double kontostand) {
         accountMap.put(kontoName, new Account(kontoName, kontostand));
     }
 
     @When("Account {string} transfers account {string} {double}€")
-    public void kontoUeberweisung(String kontoNameA, String kontoNameB, double betrag) {
+    public void accountTransaction(String kontoNameA, String kontoNameB, double betrag) {
         final Account a = accountMap.get(kontoNameA);
         final Account b = accountMap.get(kontoNameB);
 
         try {
-            transaction.add(a.ueberweisen(b, betrag));
+            transaction.add(a.transaction(b, betrag));
             transactionStatus.add(true);
         } catch (Exception e) {
             transactionStatus.add(false);
@@ -39,7 +39,7 @@ public class KontoStepDefinition {
     }
 
     @Then("All transactions should {success}")
-    public void alleTransaktionenMisslungen(Boolean status) {
+    public void allTransactionsFailOrSucceed(Boolean status) {
         if (status) {
             assertThat(transactionStatus).containsOnly(true);
         } else {
@@ -48,7 +48,7 @@ public class KontoStepDefinition {
     }
 
     @Then("Account {string} should have a balance of {double}€")
-    public void kontoHatBestimmtenKontostand(String konto, double expectedBalance) {
+    public void checkAccountForBalance(String konto, double expectedBalance) {
         final double actualBalance = accountMap.get(konto).getBalance();
         assertThat(actualBalance)
                 .as("Konto %s hat einen Kontostand von %s, sollte aber einen Kontostand von %s haben", konto, actualBalance, expectedBalance)
